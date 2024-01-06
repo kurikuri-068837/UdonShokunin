@@ -1,55 +1,36 @@
 ﻿using UdonSharp;
 using UnityEngine;
 //using UnityEngine.UI;
-using System.IO;
 using VRC.SDKBase;
 using VRC.Udon;
 
 public class CastAttendance : UdonSharpBehaviour
 {
     //---- parameter ------------------------------------------
-    //public int N_cast;
-    private string[] castName;
-    private TextAsset csvFile;
+    public int N_cast = 21; //キャスト人数
+    public string[] castName; //キャストの名前一覧
     //---------------------------------------------------------
+    
+    // N_castに数値を入れると、その分だけテキスト入力ができるstringがInspectorに表示されます
+    
 
-    private void ReadCSV()
+    void Start()
     {
-        csvFile = Resources.Load("castlist.csv") as TextAsset;
-        if (csvFile == null)
+        // N_castが変更された時に、castNameのサイズを更新する
+        if (N_cast < 0)
         {
-            Debug.LogError("Failed to load 'castlist' from Resources.");
-            return; // 何らかの対処を行うか、処理を中断する
-        }
-        StringReader reader = new StringReader(csvFile.text);
-
-        int arraySize = 0; // 配列のサイズを管理する変数
-
-        // サイズをカウント
-        while (reader.Peek() != -1)
-        {
-            reader.ReadLine();
-            arraySize++;
+            N_cast = 0;
         }
 
-        // 配列を初期化
-        castName = new string[arraySize];
-
-        // リーダーを初期化
-        reader = new StringReader(csvFile.text);
-
-        int index = 0; // 配列に要素を追加するためのインデックス
-
-        // 要素を追加
-        while (reader.Peek() != -1)
+        // 配列のサイズを変更
+        string[] newArray = new string[N_cast];
+        for (int i = 0; i < Mathf.Min(N_cast, castName.Length); i++)
         {
-            string line = reader.ReadLine();
-            castName[index] = line;
-            index++;
+            newArray[i] = castName[i];
         }
 
-
-
+        // 旧い配列を新しいものに置き換え
+        castName = newArray;
     }
 
     // ワールドにジョインしたキャストの確認
